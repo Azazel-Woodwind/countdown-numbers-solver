@@ -40,7 +40,6 @@ public:
 // Do not edit above this line
 
 // TODO: write code here:
-#include <iostream>
 using std::string;
 using std::vector;
 
