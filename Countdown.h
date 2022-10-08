@@ -40,6 +40,7 @@ public:
 // Do not edit above this line
 
 // TODO: write code here:
+#include <iostream>
 using std::string;
 using std::vector;
 
@@ -98,13 +99,14 @@ bool containsDuplicates(const vector<int>& nums) {
     return false;
 }
 
-void updateSol3(int target, int& diff, int& val, string& sol, const vector<int>& nums, const vector<int>& operationPositions, const vector<char> operations) {
+void updateSol3(int target, double& diff, int& val, string& sol, const vector<int>& nums, const vector<int>& operationPositions, const vector<char> operations) {
     if (operations.size() != operationPositions.size()) {
         return;
     }
 
     string newSol = "";
-    int i = 0, operationPosPointer = 0, numsPointer = 0, operationPointer = 0, evaluation, newDiff, n = nums.size();
+    int i = 0, operationPosPointer = 0, numsPointer = 0, operationPointer = 0, n = nums.size();
+    double evaluation, newDiff;
     while (1) {
         if (i == n + n - 2) {
             newSol += operations[operationPointer];
@@ -126,7 +128,10 @@ void updateSol3(int target, int& diff, int& val, string& sol, const vector<int>&
     catch (int err) {
         return;
     }
-    newDiff = abs(target - evaluation);
+    newDiff = target - evaluation;
+    if (newDiff < 0) {
+        newDiff *= -1;
+    }
     if (newDiff < diff) {
         diff = newDiff;
         sol = newSol;
@@ -134,9 +139,8 @@ void updateSol3(int target, int& diff, int& val, string& sol, const vector<int>&
     }
 }
 
-void updateSol2(int target, int& diff, int& val, string& sol, const vector<int>& nums, const vector<int>& operationPositions) {
+void updateSol2(int target, double& diff, int& val, string& sol, const vector<int>& nums, const vector<int>& operationPositions) {
     if (operationPositions.size() != nums.size() - 1) {
-
         return;
     }
 
@@ -157,7 +161,7 @@ void updateSol2(int target, int& diff, int& val, string& sol, const vector<int>&
     }
 }
 
-void updateSol1(int target, int& diff, int& val, string& sol, const vector<int>& nums) {
+void updateSol1(int target, double& diff, int& val, string& sol, const vector<int>& nums) {
     int n = nums.size();
     int rpnLength = n + n - 1;
     for (int a = n; a > 1; a--) {
@@ -179,7 +183,8 @@ void updateSol1(int target, int& diff, int& val, string& sol, const vector<int>&
 
 
 CountdownSolution solveCountdownProblem(vector<int> numbers, int target) {
-    int diff = INT32_MAX, n = numbers.size(), val, newDiff;
+    double diff = INT32_MAX;
+    int n = numbers.size(), val, newDiff;
     string sol;
     for (int a = 0; a < n; a++) {
         newDiff = abs(target - numbers[a]);
