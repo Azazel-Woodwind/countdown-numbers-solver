@@ -40,20 +40,10 @@ public:
 // Do not edit above this line
 
 // TODO: write code here:
-#include <iostream>
 using std::string;
 using std::vector;
-using std::cout;
 
 vector<char> OPERATIONS = {'+', '-', '*', '/'};
-
-void printVector(vector<int> nums) {
-    cout << "{";
-    for (int num : nums) {
-        cout << num << " ";
-    }
-    cout << "}\n";
-}
 
 double popDoubleVector(vector<double>& vec) {
     double last = vec.back();
@@ -71,16 +61,16 @@ double evaluateCountdown(string exp) {
                 stack.push_back(popDoubleVector(stack) + popDoubleVector(stack));
             }
             else if (temp == "-") {
-                int a = popDoubleVector(stack);
-                int b = popDoubleVector(stack);
+                double a = popDoubleVector(stack);
+                double b = popDoubleVector(stack);
                 stack.push_back(b - a);
             }
             else if (temp == "*") {
                 stack.push_back(popDoubleVector(stack) * popDoubleVector(stack));
             }
             else if (temp == "/") {
-                int a = popDoubleVector(stack);
-                int b = popDoubleVector(stack);
+                double a = popDoubleVector(stack);
+                double b = popDoubleVector(stack);
                 if (a == 0) {
                     throw -1;
                 }
@@ -99,15 +89,12 @@ double evaluateCountdown(string exp) {
 }
 
 bool containsDuplicates(const vector<int>& nums) {
-    // printVector(nums);
     vector<int> count(6);
     for (int num : nums) {
         if (count[num]++ == 1) {
-            // cout << "Duplicate found\n"; 
             return true;
         }
     }
-    // cout << "No duplicates found\n";
     return false;
 }
 
@@ -116,7 +103,6 @@ void updateSol3(int target, int& diff, int& val, string& sol, const vector<int>&
         return;
     }
 
-    // printVector(operationPositions);
     string newSol = "";
     int i = 0, operationPosPointer = 0, numsPointer = 0, operationPointer = 0, evaluation, newDiff, n = nums.size();
     while (1) {
@@ -134,7 +120,6 @@ void updateSol3(int target, int& diff, int& val, string& sol, const vector<int>&
         }
         i++;
     }
-    // cout << newSol << "\n";
     try {
         evaluation = evaluateCountdown(newSol); 
     }
@@ -150,7 +135,7 @@ void updateSol3(int target, int& diff, int& val, string& sol, const vector<int>&
 }
 
 void updateSol2(int target, int& diff, int& val, string& sol, const vector<int>& nums, const vector<int>& operationPositions) {
-    if ((int) operationPositions.size() != (int) nums.size() - 1) {
+    if (operationPositions.size() != nums.size() - 1) {
 
         return;
     }
