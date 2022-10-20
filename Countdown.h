@@ -165,13 +165,13 @@ void updateSol1(int target, double& diff, int& val, string& sol, const vector<in
     int rpnLength = n + n - 1;
     for (int a = n; a > 1; a--) {
         updateSol2(target, diff, val, sol, nums, {a});
-        for (int b = a + 1; b > a && b > 3 && b < rpnLength; b--) {
+        for (int b = n + 1; b > a && b > 3 && b < rpnLength; b--) {
             updateSol2(target, diff, val, sol, nums, {a, b});
-            for (int c = b + 1; c > b && c > 5 && c < rpnLength; c--) {
+            for (int c = n + 2; c > b && c > 5 && c < rpnLength; c--) {
                 updateSol2(target, diff, val, sol, nums, {a, b, c});
-                for (int d = c + 1; d > c && d > 7 && d < rpnLength; d--) {
+                for (int d = n + 3; d > c && d > 7 && d < rpnLength; d--) {
                     updateSol2(target, diff, val, sol, nums, {a, b, c, d});
-                    for (int e = d + 1; e > d && e > 9 && e < rpnLength; e--) {
+                    for (int e = n + 4; e > d && e > 9 && e < rpnLength; e--) {
                         updateSol2(target, diff, val, sol, nums, {a, b, c, d, e});
                     }
                 }
@@ -179,7 +179,6 @@ void updateSol1(int target, double& diff, int& val, string& sol, const vector<in
         }
     }
 }
-
 
 CountdownSolution solveCountdownProblem(vector<int> numbers, int target) {
     double diff = INT32_MAX;
@@ -223,7 +222,6 @@ CountdownSolution solveCountdownProblem(vector<int> numbers, int target) {
             }
         }
     }
-
     return CountdownSolution(sol, val);
 }
 
