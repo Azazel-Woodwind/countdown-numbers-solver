@@ -44,6 +44,12 @@ using std::string;
 using std::vector;
 #include <iostream>
 
+struct Solution {
+    vector<int> nums;
+    vector<int> operationPositions;
+    vector<char> operations;
+};
+
 vector<char> OPERATIONS = {'+', '-', '*', '/'};
 
 double popDoubleVector(vector<double>& vec) {
@@ -97,6 +103,9 @@ double evaluateCountdown(string exp) {
 }
 
 string constructRPNExp(const vector<int>& nums, const vector<int>& operationPositions, const vector<char> operations) {
+    if (operationPositions.size() == 0) {
+        return intToString(nums[0]);
+    }
     string newSol = "";
     int i = 0, operationPosPointer = 0, numsPointer = 0, operationPointer = 0, n = nums.size();
     while (1) {
@@ -127,7 +136,7 @@ bool containsDuplicates(const vector<int>& nums) {
     return false;
 }
 
-void updateSol3(int target, double& diff, int& val, string& sol, const vector<int>& nums, const vector<int>& operationPositions, const vector<char> operations) {
+void updateSol3(int target, double& diff, int& val, Solution& sol, const vector<int>& nums, const vector<int>& operationPositions, const vector<char> operations) {
     if (operations.size() != operationPositions.size()) {
         return;
     }
@@ -166,17 +175,26 @@ void updateSol3(int target, double& diff, int& val, string& sol, const vector<in
     
     evaluation = stack.back();
     newDiff = target - evaluation;
+    if (newDiff == 0) {
+        sol.nums = nums;
+        sol.operationPositions = operationPositions;
+        sol.operations = operations;
+        val = evaluation;
+        throw -1;
+    }
     if (newDiff < 0) {
         newDiff *= -1;
     }
     if (newDiff < diff) {
         diff = newDiff;
-        sol = constructRPNExp(nums, operationPositions, operations);
+        sol.nums = nums;
+        sol.operationPositions = operationPositions;
+        sol.operations = operations;
         val = evaluation;
     }
 }
 
-void updateSol2(int target, double& diff, int& val, string& sol, const vector<int>& nums, const vector<int>& operationPositions) {
+void updateSol2(int target, double& diff, int& val, Solution& sol, const vector<int>& nums, const vector<int>& operationPositions) {
     if (operationPositions.size() != nums.size() - 1) {
         return;
     }
@@ -198,7 +216,7 @@ void updateSol2(int target, double& diff, int& val, string& sol, const vector<in
     }
 }
 
-void updateSol1(int target, double& diff, int& val, string& sol, const vector<int>& nums) {
+void updateSol1(int target, double& diff, int& val, Solution& sol, const vector<int>& nums) {
     int n = nums.size();
     int rpnLength = n + n - 1;
     for (int a = n; a > 1; a--) {
@@ -233,46 +251,57 @@ void updateSol1(int target, double& diff, int& val, string& sol, const vector<in
 CountdownSolution solveCountdownProblem(vector<int> numbers, int target) {
     double diff = INT32_MAX;
     int n = numbers.size(), val, newDiff;
-    string sol;
-    for (int a = 0; a < n; a++) {
-        newDiff = abs(target - numbers[a]);
-        if (newDiff < diff) {
-            diff = newDiff;
-            val = numbers[a];
-            sol = intToString(numbers[a]);
-        }
-        for (int b = 0; b < n; b++) {
-            if (containsDuplicates({a, b})) {
-                continue;
+    Solution sol;
+    try {
+        for (int a = 0; a < n; a++) {
+            newDiff = abs(target - numbers[a]);
+            if (newDiff < diff) {
+                diff = newDiff;
+                val = numbers[a];
+                sol.nums = {numbers[a]};
+                sol.operationPositions = {};
+                sol.operations = {};
+                if (newDiff == 0) {
+                    throw -1;
+                }
             }
-            updateSol1(target, diff, val, sol, {numbers[a], numbers[b]});
-            for (int c = 0; c < n; c++) {
-                if (containsDuplicates({a, b, c})) {
+            for (int b = 0; b < n; b++) {
+                if (containsDuplicates({a, b})) {
                     continue;
                 }
-                updateSol1(target, diff, val, sol, {numbers[a], numbers[b], numbers[c]});
-                for (int d = 0; d < n; d++) {
-                    if (containsDuplicates({a, b, c, d})) {
+                updateSol1(target, diff, val, sol, {numbers[a], numbers[b]});
+                for (int c = 0; c < n; c++) {
+                    if (containsDuplicates({a, b, c})) {
                         continue;
                     }
-                    updateSol1(target, diff, val, sol, {numbers[a], numbers[b], numbers[c], numbers[d]});
-                    for (int e = 0; e < n; e++) {
-                        if (containsDuplicates({a, b, c, d, e})) {
+                    updateSol1(target, diff, val, sol, {numbers[a], numbers[b], numbers[c]});
+                    for (int d = 0; d < n; d++) {
+                        if (containsDuplicates({a, b, c, d})) {
                             continue;
                         }
-                        updateSol1(target, diff, val, sol, {numbers[a], numbers[b], numbers[c], numbers[d], numbers[e]});
-                        for (int f = 0; f < n; f++) {
-                            if (containsDuplicates({a, b, c, d, e, f})) {
+                        updateSol1(target, diff, val, sol, {numbers[a], numbers[b], numbers[c], numbers[d]});
+                        for (int e = 0; e < n; e++) {
+                            if (containsDuplicates({a, b, c, d, e})) {
                                 continue;
                             }
-                            updateSol1(target, diff, val, sol, {numbers[a], numbers[b], numbers[c], numbers[d], numbers[e], numbers[f]});
+                            updateSol1(target, diff, val, sol, {numbers[a], numbers[b], numbers[c], numbers[d], numbers[e]});
+                            for (int f = 0; f < n; f++) {
+                                if (containsDuplicates({a, b, c, d, e, f})) {
+                                    continue;
+                                }
+                                updateSol1(target, diff, val, sol, {numbers[a], numbers[b], numbers[c], numbers[d], numbers[e], numbers[f]});
+                            }
                         }
                     }
                 }
             }
         }
     }
-    return CountdownSolution(sol, val);
+    catch (int err) {
+
+    }
+    
+    return CountdownSolution(constructRPNExp(sol.nums, sol.operationPositions, sol.operations), val);
 }
 
 // Do not edit below this line
