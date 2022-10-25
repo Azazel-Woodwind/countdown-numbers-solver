@@ -42,6 +42,7 @@ public:
 // TODO: write code here:
 using std::string;
 using std::vector;
+#include <iostream>
 
 vector<char> OPERATIONS = {'+', '-', '*', '/'};
 
@@ -53,39 +54,67 @@ double popDoubleVector(vector<double>& vec) {
 
 double evaluateCountdown(string exp) {
     vector<double> stack;
-    string temp = "";
-    int n = exp.size();
-    for (int i = 0; i <= n; i++) {
-        if (i == n || exp[i] == ' ') {
-            if (temp == "+") {
-                stack.push_back(popDoubleVector(stack) + popDoubleVector(stack));
+    int n = exp.size(), front = 0, back = 0;
+    bool added = false;
+    for (int i = 1; i < n; i++) {
+        if (exp[i] >= '0' && exp[i] <= '9' || exp[i] == '.') {
+            if (added) {
+                front = i, back = i;
+                added = false;
             }
-            else if (temp == "-") {
-                double a = popDoubleVector(stack);
-                double b = popDoubleVector(stack);
-                stack.push_back(b - a);
+            else {
+                back++;
             }
-            else if (temp == "*") {
-                stack.push_back(popDoubleVector(stack) * popDoubleVector(stack));
+        }
+        else if (exp[i] == ' ') {
+            if (!added) {
+                added = true;
+                double ans = stod(exp.substr(front, back - front + 1));
+                stack.emplace_back(ans);
             }
-            else if (temp == "/") {
-                double a = popDoubleVector(stack);
-                double b = popDoubleVector(stack);
+        }
+        else {
+            double a = popDoubleVector(stack);
+            double b = popDoubleVector(stack);
+            if (exp[i] == '+') {
+                stack.emplace_back(a + b);
+            }
+            else if (exp[i] == '-') {
+                stack.emplace_back(b - a);
+            }
+            else if (exp[i] == '*') {
+                stack.emplace_back(a * b);
+            }
+            else if (exp[i] == '/') {
                 if (a == 0) {
                     throw -1;
                 }
-                stack.push_back(b / a);
+                stack.emplace_back(b / a);
             }
-            else {
-                stack.push_back(stod(temp));
-            }
-            temp = "";
-        }
-        else {
-            temp += exp[i];
         }
     }
     return stack.back();
+}
+
+string constructRPNExp(const vector<int>& nums, const vector<int>& operationPositions, const vector<char> operations) {
+    string newSol = "";
+    int i = 0, operationPosPointer = 0, numsPointer = 0, operationPointer = 0, n = nums.size();
+    while (1) {
+        if (i == n + n - 2) {
+            newSol += operations[operationPointer];
+            break;
+        }
+        if (i == operationPositions[operationPosPointer]) {
+            newSol += operations[operationPointer++];
+            newSol += " ";
+            operationPosPointer++;
+        }
+        else {
+            newSol += intToString(nums[numsPointer++]) + " ";
+        }
+        i++;
+    }
+    return newSol;
 }
 
 bool containsDuplicates(const vector<int>& nums) {
@@ -103,37 +132,46 @@ void updateSol3(int target, double& diff, int& val, string& sol, const vector<in
         return;
     }
 
-    string newSol = "";
-    int i = 0, operationPosPointer = 0, numsPointer = 0, operationPointer = 0, n = nums.size();
     double evaluation, newDiff;
-    while (1) {
-        if (i == n + n - 2) {
-            newSol += operations[operationPointer];
-            break;
-        }
+    vector<double> stack;
+    int i = 0, operationPosPointer = 0, numsPointer = 0, operationPointer = 0, n = nums.size();
+    while (i < n + n - 1) {
         if (i == operationPositions[operationPosPointer]) {
-            newSol += operations[operationPointer++];
-            newSol += " ";
+            double a = popDoubleVector(stack);
+            double b = popDoubleVector(stack);
+            if (operations[operationPointer] == '+') {
+                stack.emplace_back(a + b);
+            }
+            else if (operations[operationPointer] == '-') {
+                stack.emplace_back(b - a);
+            }
+            else if (operations[operationPointer] == '*') {
+                stack.emplace_back(a * b);
+            }
+            else if (operations[operationPointer] == '/') {
+                if (a == 0) {
+                    return;
+                }
+                stack.emplace_back(b / a);
+            }
+            
+            operationPointer++;
             operationPosPointer++;
         }
         else {
-            newSol += intToString(nums[numsPointer++]) + " ";
+            stack.emplace_back(nums[numsPointer++]);
         }
         i++;
     }
-    try {
-        evaluation = evaluateCountdown(newSol); 
-    }
-    catch (int err) {
-        return;
-    }
+    
+    evaluation = stack.back();
     newDiff = target - evaluation;
     if (newDiff < 0) {
         newDiff *= -1;
     }
     if (newDiff < diff) {
         diff = newDiff;
-        sol = newSol;
+        sol = constructRPNExp(nums, operationPositions, operations);
         val = evaluation;
     }
 }
@@ -165,12 +203,24 @@ void updateSol1(int target, double& diff, int& val, string& sol, const vector<in
     int rpnLength = n + n - 1;
     for (int a = n; a > 1; a--) {
         updateSol2(target, diff, val, sol, nums, {a});
+        if (n == 2) {
+            continue;
+        }
         for (int b = n + 1; b > a && b > 3 && b < rpnLength; b--) {
             updateSol2(target, diff, val, sol, nums, {a, b});
+            if (n == 3) {
+                continue;
+            }
             for (int c = n + 2; c > b && c > 5 && c < rpnLength; c--) {
                 updateSol2(target, diff, val, sol, nums, {a, b, c});
+                if (n == 4) {
+                    continue;
+                }
                 for (int d = n + 3; d > c && d > 7 && d < rpnLength; d--) {
                     updateSol2(target, diff, val, sol, nums, {a, b, c, d});
+                    if (n == 5) {
+                        continue;
+                    }
                     for (int e = n + 4; e > d && e > 9 && e < rpnLength; e--) {
                         updateSol2(target, diff, val, sol, nums, {a, b, c, d, e});
                     }
