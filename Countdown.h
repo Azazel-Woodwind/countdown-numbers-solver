@@ -60,6 +60,7 @@ double popDoubleVector(vector<double>& vec) {
 
 double evaluateCountdown(string exp) {
     vector<double> stack;
+    stack.reserve(6);
     int n = exp.size(), front = 0, back = 0;
     bool added = false;
     for (int i = 1; i < n; i++) {
@@ -143,6 +144,7 @@ void updateSol3(int target, double& diff, int& val, Solution& sol, const vector<
 
     double evaluation, newDiff;
     vector<double> stack;
+    stack.reserve(6);
     int i = 0, operationPosPointer = 0, numsPointer = 0, operationPointer = 0, n = nums.size();
     while (i < n + n - 1) {
         if (i == operationPositions[operationPosPointer]) {
