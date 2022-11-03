@@ -327,7 +327,7 @@ vector<Entree> reduce(const vector<Entree>& vec, int i, int j, double result, st
         if (index == i || index == j) {
             continue;
         }
-        copy[pointer] = vec[index];
+        copy[pointer++] = vec[index];
     }
     copy.back() = {result, exp};
     return copy;
@@ -366,8 +366,9 @@ void solve(const vector<Entree>& nums, int target) {
                     //     std::cout << e.num << " ";
                     // }
                     // std::cout << "}" << std::endl;
-                    vector<Entree> temp = reduce(nums, i, j, result, exp);
-                    solve(temp, target);
+                    if (nums.size() > 2) {
+                        solve(reduce(nums, i, j, result, exp), target);
+                    }
                 }
                 else {
                     string exp;
@@ -388,8 +389,9 @@ void solve(const vector<Entree>& nums, int target) {
                             exp = nums[j].exp + " " + nums[i].exp + " /";
                         }
                         updateSol(result, exp, target);
-                        vector<Entree> temp = reduce(nums, i, j, result, exp);
-                        solve(temp, target);
+                        if (nums.size() > 2) {
+                            solve(reduce(nums, i, j, result, exp), target);
+                        }
                         continue;
                     }
                     else {
@@ -400,11 +402,13 @@ void solve(const vector<Entree>& nums, int target) {
                     string exp2 = nums[j].exp + " " + nums[i].exp + " " + operation;
                     updateSol(result, exp, target);
                     updateSol(result2, exp2, target);
-                    vector<Entree> temp = reduce(nums, i, j, result, exp); 
-                    solve(temp, target);
-                    temp.pop_back();
-                    temp.emplace_back(result2, exp2);
-                    solve(temp, target);
+                    if (nums.size() > 2) {
+                        vector<Entree> temp = reduce(nums, i, j, result, exp); 
+                        solve(temp, target);
+                        temp.pop_back();
+                        temp.emplace_back(result2, exp2);
+                        solve(temp, target);
+                    }
                 }
             }
         }
