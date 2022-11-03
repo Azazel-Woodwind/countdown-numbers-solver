@@ -335,6 +335,7 @@ vector<Entree> reduce(const vector<Entree>& vec, int i, int j, double result, st
 
 void updateSol(double result, string& exp, int target) {
     double newDiff = target - result;
+
     if (newDiff < 0) {
         newDiff *= -1;
     }
@@ -342,6 +343,9 @@ void updateSol(double result, string& exp, int target) {
         diff = newDiff;
         ans = exp;
         val = result;
+        if (newDiff == 0) {
+            throw -1;
+        }
     }
 }
 
@@ -439,7 +443,11 @@ CountdownSolution solveCountdownProblemV2(const vector<int>& numbers, int target
     //     nums.emplace_back(num, intToString(num));
     // }
     
-    solve(nums, target);
+    try {
+        solve(nums, target);
+    }
+    catch (int err) {}
+    
     return CountdownSolution(ans, val);
 }
 
