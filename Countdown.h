@@ -320,6 +320,19 @@ double diff = INT32_MAX;
 double val;
 string ans;
 
+vector<Entree> reduce(const vector<Entree>& vec, int i, int j, double result, string& exp) {
+    vector<Entree> copy;
+    copy.reserve(vec.size() - 2);
+    for (int index = 0; index < vec.size(); index++) {
+        if (index == i || index == j) {
+            continue;
+        }
+        copy.emplace_back(vec[index]);
+    }
+    copy.emplace_back(result, exp);
+    return copy;
+}
+
 void updateSol(double result, string& exp, int target) {
     double newDiff = target - result;
     if (newDiff < 0) {
@@ -353,10 +366,7 @@ void solve(const vector<Entree>& nums, int target) {
                     //     std::cout << e.num << " ";
                     // }
                     // std::cout << "}" << std::endl;
-                    vector<Entree> temp(nums);
-                    temp.erase(temp.begin() + i);
-                    temp.erase(temp.begin() + j - 1);
-                    temp.emplace_back(result, exp);
+                    vector<Entree> temp = reduce(nums, i, j, result, exp);
                     solve(temp, target);
                 }
                 else {
@@ -378,10 +388,7 @@ void solve(const vector<Entree>& nums, int target) {
                             exp = nums[j].exp + " " + nums[i].exp + " /";
                         }
                         updateSol(result, exp, target);
-                        vector<Entree> temp(nums);
-                        temp.erase(temp.begin() + i);
-                        temp.erase(temp.begin() + j - 1);
-                        temp.emplace_back(result, exp);
+                        vector<Entree> temp = reduce(nums, i, j, result, exp);
                         solve(temp, target);
                         continue;
                     }
@@ -393,10 +400,7 @@ void solve(const vector<Entree>& nums, int target) {
                     string exp2 = nums[j].exp + " " + nums[i].exp + " " + operation;
                     updateSol(result, exp, target);
                     updateSol(result2, exp2, target);
-                    vector<Entree> temp(nums);
-                    temp.erase(temp.begin() + i);
-                    temp.erase(temp.begin() + j - 1);
-                    temp.emplace_back(result, exp);
+                    vector<Entree> temp = reduce(nums, i, j, result, exp); 
                     solve(temp, target);
                     temp.pop_back();
                     temp.emplace_back(result2, exp2);
@@ -425,10 +429,14 @@ CountdownSolution solveCountdownProblemV2(const vector<int>& numbers, int target
         nums[i].num = numbers[i];
         nums[i].exp = intToString(numbers[i]);
     }
+    // vector<Entree> nums;
+    // nums.reserve(numbers.size());
+    // for (int num : numbers) {
+    //     nums.emplace_back(num, intToString(num));
+    // }
     
     solve(nums, target);
     return CountdownSolution(ans, val);
-
 }
 
 CountdownSolution solveCountdownProblem(const vector<int>& numbers, int target) {
