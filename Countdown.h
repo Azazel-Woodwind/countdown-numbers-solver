@@ -321,15 +321,15 @@ double val;
 string ans;
 
 vector<Entree> reduce(const vector<Entree>& vec, int i, int j, double result, string& exp) {
-    vector<Entree> copy;
-    copy.reserve(vec.size() - 2);
+    vector<Entree> copy(vec.size() - 1);
+    int pointer = 0;
     for (int index = 0; index < vec.size(); index++) {
         if (index == i || index == j) {
             continue;
         }
-        copy.emplace_back(vec[index]);
+        copy[pointer] = vec[index];
     }
-    copy.emplace_back(result, exp);
+    copy.back() = {result, exp};
     return copy;
 }
 
