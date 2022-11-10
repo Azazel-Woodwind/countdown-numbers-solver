@@ -128,6 +128,7 @@ string constructRPNExp(const vector<int>& nums, const vector<int>& operationPosi
     return newSol;
 }
 
+
 bool containsDuplicates(const vector<int>& nums) {
     vector<int> count(6);
     for (int num : nums) {
