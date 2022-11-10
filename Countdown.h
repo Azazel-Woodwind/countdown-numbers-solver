@@ -44,6 +44,8 @@ using std::string;
 using std::vector;
 // #include <iostream>
 
+//Version 1
+
 struct Solution {
     vector<int> nums;
     vector<int> operationPositions;
@@ -308,6 +310,9 @@ CountdownSolution solveCountdownProblemV1(const vector<int>& numbers, int target
     return CountdownSolution(constructRPNExp(sol.nums, sol.operationPositions, sol.operations), val);
 }
 
+//******************************************************************************************************************************8
+//Version 2
+
 struct Entree {
     double num;
     string exp;
@@ -438,11 +443,6 @@ CountdownSolution solveCountdownProblemV2(const vector<int>& numbers, int target
         nums[i].num = numbers[i];
         nums[i].exp = intToString(numbers[i]);
     }
-    // vector<Entree> nums;
-    // nums.reserve(numbers.size());
-    // for (int num : numbers) {
-    //     nums.emplace_back(num, intToString(num));
-    // }
     
     try {
         solve(nums, target);
@@ -457,6 +457,5 @@ CountdownSolution solveCountdownProblem(const vector<int>& numbers, int target) 
 }
 
 // Do not edit below this line
-
 
 #endif
